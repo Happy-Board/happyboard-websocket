@@ -1,0 +1,32 @@
+name: Deploy Websocket Server
+
+on:
+  push: 
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}       
+      - name: Build docker image
+        run: docker build -t duymt3/happyboard-websocket:latest .  
+      - name: Publish image to docker hub
+        run: docker push duymt3/happyboard-websocket:latest
+        
+  # deploy:
+  #   needs: build
+  #   runs-on: cicd-be
+  #   steps:
+  #     - name: Pull image from docker hub
+  #       run: docker pull duymt3/happyboard-be:latest
+  #     - name: Delete old container
+  #       run: docker rm -f happyboard-be-container
+  #     - name: Delete old image
+  #       run: docker rmi duymt3/happyboard-be:latest
+  #     - name: Run docker container
+  #       run: docker run -d -p 8000:8000 --name happyboard-be-container duymt3/happyboard-be:latest
